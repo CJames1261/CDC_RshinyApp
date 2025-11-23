@@ -1,9 +1,3 @@
-Here is a clean, professional, GitHub-ready **README explanation** that incorporates everything we've discussed. It’s structured, polished, and explains the vision of your project clearly and convincingly.
-
-You can drop this directly into a README.md file.
-
----
-
 # 📊 CDC Data Extraction & Public Health Visualization Project
 
 This project began as an effort to deploy an R Shiny app capable of visualizing public health data from the CDC. While exploring the CDC website to understand what datasets were publicly available, I quickly realized that accessing and working with the data is far more complicated than it should be. The CDC’s interface can be confusing, the data formats are inconsistent, and the exported tables are not intuitive for the average user—especially those without a data science background.

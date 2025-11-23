@@ -19,9 +19,9 @@ This dataset measures the number of heat-wave days per U.S. county across severa
 | **Year**           | Calendar year of measurement |
 | **hw_tmax_days**   | Number of heat-wave days based on daily maximum temperature (Tmax) |
 | **hw_tmax_avg**    | Average heat-wave days based on Tmax |
-| **hw_hi_days**     | Number of heat-wave days based on daily maximum heat index (temp + humidity) |
+| **hw_hi_days**     | Number of heat-wave days based on daily maximum heat index  |
 | **hw_hi_avg**      | Average heat-wave days based on daily maximum heat index |
-| **hw_nhs_days**    | Number of heat-wave days in a year based on net heat stress (temp + humidity + radiation + wind) |
+| **hw_nhs_days**    | Number of heat-wave days in a year based on net heat stress  |
 | **hw_nhs_avg**     | Average heat-wave days based on net heat stress |
 | **Population**     | Total county population for the given year |
 | **State_abrv**     | Two-letter state abbreviation extracted from the County field |

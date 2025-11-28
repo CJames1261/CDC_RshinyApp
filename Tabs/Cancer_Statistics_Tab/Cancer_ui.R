@@ -1,139 +1,202 @@
 # Tabs/Cancer_Statistics_Tab/Cancer_ui.R
+# Initial filters
+css_body <- tags$head(
+  tags$style(
+    HTML(" 
+    $(document).ready(function() {
+      $('button[data-add=\"rule\"]').contents().last()[0].textContent = 'Add Filter';
+    });
+    
+    /* Custom styles for notifications */
+    .shiny-notification {  
+      position: fixed;
+      top: calc(50%);  
+      left: calc(50%);  
+      transform: translate(-50%, 0%);
+      height: 100%;
+      max-height: 40px;
+      width: 100%;
+      max-width: 480px;
+      font-size: 24px;
+      font-weight: bold;
+      color: black;
+    }
+    
+    /* darker font for break line */
+    hr {
+      border-top: 1px solid #000000;
+    }
+    
+    /* border for iframe */
+    iframe-border {
+      border: 2px solid #000000;
+    }
+    
+    /* hide slide header numbersin presentation */
+    .slides > slide > htroup > h1 {
+      display: none;
+    }
+    
+    /* hide slide headers */
+    .increase-fontsize-text {
+      font-size: 20px;
+    }
+    
+    /* creating a class '.custom-tab-scrollbar' to add a scroll bar to the contents displayed in tabs */
+    .custom-tab-scrollbar {
+      height: 50vh;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    /* creating a class name '.full_screen' */
+    .full-screen {
+      position: fixed;
+      height: 98vh !important;
+      width: 98vw !important;
+      left: 0;
+      top: 0;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    
+    /* Creating custom vertical dotted line */
+    .vertical-dotted-line {
+      border-left: 2px dotted #28b78d; /* Adjust color and thickness as needed */
+      height: 100vh; /* Adjust height as needed */
+    }
+    
+    
+    
+    
+    /* Need both of the following two sections: .selectize-input & .rule-value-container widths set so that the selection options are seable */
+    .selectize-input input[type='text'] {
+      width: 300px !important; /* Adjust the width as needed */
+    }
+    .rule-value-container {
+    border-left: 1px solid #ddd;
+    padding-left: 5px;
+    width: 300px;
+    }
+    
+    
+    
+    
+    
+    
+    }
+  ")
+  ),
+  tags$style(
+    HTML("
+         /* enabling tooltip for the Jquery slider selcections */
+    .tooltip {
+    position: absolute;
+    z-index: 1070;
+    display: none; /* Initially hide tooltip */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.42857143;
+    line-break: auto;
+    text-align: left;
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    word-wrap: normal;
+    white-space: normal;
+    font-size: 12px;
+    filter: alpha(opacity = 100); /* For older versions of IE */
+    opacity: 1; /* Make the tooltip fully visible */
+    color: #ffffff; /* Text color */
+    background-color: #000000; /* Background color */
+    
+    /* Lower the position of the tooltip */
+    bottom: 15px; /* Adjust the value as needed */
+    }
+  ")
+  )
+)
+
+#### JS UI Body ####
+jss_body <- tags$head(
+  tags$style(HTML("
+    // put style tags here
+  ")),
+  tags$script(HTML("
+
+    
+
+    // JavaScript function to handle box minimization
+    $(document).on('click', '.box-header .fa-minus', function() {
+        var box = $(this).parents('.box').first();
+        box.find('.box-body, .box-footer').slideUp();
+        box.find('.box-header .fa-minus').removeClass('fa-minus').addClass('fa-plus');
+    });
+
+    // JavaScript function to handle box restoration
+    $(document).on('click', '.box-header .fa-plus', function() {
+        var box = $(this).parents('.box').first();
+        box.find('.box-body, .box-footer').slideDown();
+        box.find('.box-header .fa-plus').removeClass('fa-plus').addClass('fa-minus');
+    });
+
+    // Code to automatically click the minimize options on all sections in the app that can be minimized
+    $(document).ready(function(){
+        // Simulate a click on the collapse button
+        $('.box-header .fa-minus').click();
+    });
+
+    // Additional JavaScript code for custom options
+    // Add your custom JavaScript code here
+    
+    
+    // expand the button by defualt in the Causal analysis tab
+    $(document).ready(function() {
+      var box = $('#Test');
+      if (box.hasClass('collapsed-box')) {
+        // Expand the box
+        box.removeClass('collapsed-box');
+        box.find('.fa-plus').removeClass('fa-plus').addClass('fa-minus');
+        box.find('.box-body, .box-footer').show();
+      }
+    });
+    
+    
+    
+  "))
+)
+
 
 cancer_tab <- tabPanel(
   title = "Cancer Statistics",
   
-  fluidPage(
+  fluidPage(shinyjs::useShinyjs(),
+            useQueryBuilder(bs_version='5'),
+            jss_body,
+            css_body,
     
-    # ---- Top: Filter section in a box ----
     fluidRow(
-      box(
-        title = "Filters",
-        collapsible = FALSE,
-        width = 12,
-        
-        fluidRow(
-          # Y variable (single select)
-          column(
-            width = 3,
-            pickerInput(
-              inputId = "y_sel",
-              label = "Select y variable",
-              choices = cancer_numeric_cols,   # to be filled dynamically in server
-              options = list(
-                `actions-box` = TRUE,
-                `live-search` = TRUE,
-                `selected-text-format` = "count > 3",
-                `count-selected-text` = "{0} items selected",
-                `deselect-all-text` = "Clear All",
-                `select-all-text` = "Select All",
-                `none-selected-text` = "None selected"
-              ),
-              multiple = FALSE   # <-- only one Y variable
-            )
-          ),
-          
-          # X variables (multi-select)
-          column(
-            width = 3,
-            pickerInput(
-              inputId = "x_sel",
-              label = "Select x variables",
-              choices = cancer_numeric_cols,   # to be filled dynamically
-              options = list(
-                `actions-box` = TRUE,
-                `live-search` = TRUE,
-                `selected-text-format` = "count > 2",
-                `count-selected-text` = "{0} items selected",
-                `deselect-all-text` = "Clear All",
-                `select-all-text` = "Select All",
-                `none-selected-text` = "None selected"
-              ),
-              multiple = TRUE    # <-- allow multiple X vars
-            )
-          ),
-          
-          # Grouping variable + possible values
-          column(
-            width = 3,
-            pickerInput(
-              inputId = "group_var",
-              label = "Choose color grouping variable",
-              choices = cancer_groupable_cols,
-              options = list(
-                `actions-box` = TRUE,
-                `live-search` = TRUE,
-                `count-selected-text` = "{0} items selected",
-                `deselect-all-text` = "Clear All",
-                `select-all-text` = "Select All",
-                `none-selected-text` = "None selected"
-              ),
-              multiple = FALSE
-            ),
-            conditionalPanel(
-              condition = "input.group_var != 'None selected'",
-              pickerInput(
-                inputId = "group_var_values",
-                label = "Select values",
-                choices = NULL,
-                options = list(
-                  `actions-box` = TRUE,
-                  `live-search` = TRUE,
-                  `selected-text-format` = "count > 3",
-                  `count-selected-text` = "{0} items selected",
-                  `deselect-all-text` = "Clear All",
-                  `select-all-text` = "Select All",
-                  `none-selected-text` = "None selected"
-                ),
-                multiple = TRUE
-              )
-            )
-          ),
-          
-          # Year slider
-          column(
-            width = 3,
-            sliderInput(
-              inputId = "cancer_filter_year",
-              label = "Year Range:",
-              min = 1999,
-              max = 2022,
-              value = c(2010, 2022),
-              step = 1,
-              sep = ""   # no thousands separator
-            )
-          )
-        )
-      )
-    ),
-    
-    br(),
-    
-    # ---- Bottom: two boxes side-by-side ----
-    fluidRow(
-      # Left box: visualizations
-      column(
-        width = 6,
-        wellPanel(
-          h4("Visualizations"),
-          p("Plots and charts reacting to your filters will appear here."),
-          plotOutput("cancer_main_plot", height = "300px"),
-          br(),
-          plotOutput("cancer_secondary_plot", height = "250px")
-        )
+      column(6,
+             h4("Query Builder"),
+             queryBuilderInput(
+               inputId = "widget_filter",
+               filters = cancer_base_filters,
+               rules = rules_widgets,
+               display_errors = TRUE,
+               return_value = "all"
+             ),
+             br(),
+             actionButton("reset", "Reset Filters", class = "btn-danger")
       ),
-      
-      # Right box: live data view
-      column(
-        width = 6,
-        wellPanel(
-          h4("Filtered Data"),
-          p("This table shows the current view of the cancer dataset based on the filters above."),
-          DT::dataTableOutput("cancer_table")
-        )
+      column(6,
+             h4("Filtered Data"),
+             DTOutput("filtered_table")
       )
-    ),
-    
-    br()
+    )
   )
 )

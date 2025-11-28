@@ -1,58 +1,56 @@
+# Tabs/Cancer_Statistics_Tab/Cancer_server.R
 
-
-render_cancer_tab <- 
-  function(input, output,session) {
-    
-    ### create reactive values
-    cancer_global_reactive <- reactiveValues(
-      data = cancer_dat
-      
-    )
-    
-    #numeric columns
-    cancer_numeric_cols <- names(cancer_dat)[sapply(cancer_dat, is.numeric)]
-    
-    # 2. Binary columns (0/1 or "0"/"1")
-    cancer_binary_cols <- names(cancer_dat)[sapply(cancer_dat, function(x) {
-      vals <- unique(na.omit(x))      # ignore NA
-      # numeric 0/1 OR character "0"/"1"
-      (is.numeric(x)  && length(vals) > 0 && all(vals %in% c(0, 1))) ||
-        (is.character(x) && length(vals) > 0 && all(vals %in% c("0", "1")))
-    })]
-    
-    # 3. String / factor columns (good for grouping, filters, etc.)
-    cancer_string_factor_cols <- names(cancer_dat)[sapply(cancer_dat, function(x) {
-      is.character(x) || is.factor(x)
-    })]
-    
-    # 4. If you want a generic "groupable" set: string/factor + binary
-    cancer_groupable_cols <- union(cancer_string_factor_cols, cancer_binary_cols)
-    
-    
-    # Optional: continuous numeric (numeric but NOT binary)
-    cancer_continuous_cols <- setdiff(cancer_numeric_cols, cancer_binary_cols)
-    
-    observeEvent(input$group_var, {
-      # If nothing or "None selected", clear the values picker
-      if (is.null(input$group_var) || input$group_var == "None selected") {
-        updatePickerInput(
-          session,
-          inputId = "group_var_values",
-          choices = NULL,
-          selected = NULL
-        )
-      } else {
-        # Get unique values from the chosen grouping column
-        vals <- sort(unique(cancer_dat[[input$group_var]]))
-        
-        updatePickerInput(
-          session,
-          inputId = "group_var_values",
-          choices = vals,
-          selected = vals   # default: all selected
-        )
-      }
-    })
-    
+render_cancer_tab <- function(input, output, session) {
   
-  }
+  # This holds the filtered data
+  rv <- reactiveValues(filtered_data = cancer_dat)
+  
+ 
+  # Whenever filters change in jqbr
+  observe({
+    qb <- input$widget_filter
+    
+    if (is.null(qb)) return()
+    
+    rules <- qb$r_rules
+    
+    # Debug print
+    print("Rules changed:")
+    print(rules)
+    
+    # Update the filtered data reactively
+    rv$filtered_data <- if (is.null(rules)) {
+      cancer_dat
+    } else {
+      filter_table(cancer_dat, rules)
+    }
+    
+    # Regenerate filter options based on filtered data
+    new_filters <- generate_widget_filters(rv$filtered_data)
+    
+    # Update the builder UI with the new filters and current rules
+    updateQueryBuilder(
+      inputId = "widget_filter",
+      setFilters = new_filters,
+      setRules = rules
+    )
+  })
+  
+  # Render the filtered table
+  output$filtered_table <- renderDT({
+    print("Rendering filtered table...")
+    DT::datatable(rv$filtered_data)
+  })
+  
+  # Handle Reset Button
+  observeEvent(input$reset, {
+    rv$filtered_data <- cancer_dat
+    
+    updateQueryBuilder(
+      inputId = "widget_filter",
+      reset = TRUE,
+      setFilters = cancer_base_filters,
+      setRules = NULL
+    )
+  })
+}

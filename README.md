@@ -73,13 +73,3 @@ Ultimately, this project aims to provide:
 
 Public health data belongs to everyone—and accessing it shouldn’t require specialized expertise.
 
----
-
-If you'd like, I can also help you:
-
-✅ Add badges, installation instructions, or usage examples
-✅ Create screenshots or diagrams for your README
-✅ Document the API extraction pipeline step-by-step
-✅ Write a "How It Works" section showing the XML → DataFrame → DB workflow
-
-Just tell me!

@@ -1,0 +1,21 @@
+your_app_root_directory/
+├─ global.R
+├─ server.R
+├─ ui.R
+│
+├─ Rshiny_Data_Bases/
+│  ├─ cancer_statistics_1999_2022.db
+│  ├─ cdc_heatwave.db
+│  
+│
+└─ Tabs/
+   ├─ Cancer_Statistics_Tab/
+   │  ├─ Cancer_server.R    # server logic for the Cancer tab (module server)
+   │  └─ Cancer_ui.R        # UI for the Cancer tab (module UI)
+   │
+   ├─ Heatwave_Tab/
+   │  ├─ Heatwave_server.R  # server logic for the Heatwave tab (module server)
+   │  └─ Heatwave_ui.R      # UI for the Heatwave tab (module UI)
+   │
+   └─ Overview_Tab/
+      └─ Overview_ui.R      # UI for the Overview tab (module UI)

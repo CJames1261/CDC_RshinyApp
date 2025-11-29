@@ -14,6 +14,11 @@ library(shinycssloaders)
 library(plotly)
 library(jqbr)
 library(bslib)
+library(rpivotTable)
+library(htmlwidgets)
+library(rvest)
+library(writexl)
+library(readr)
 
 
 
@@ -182,7 +187,6 @@ generate_widget_filters <- function(data) {
   for (col in date_cols) {
     min_date <- min(data[[col]], na.rm = TRUE)
     max_date <- max(data[[col]], na.rm = TRUE)
-    3
     filter <- list(
       id = col,
       label = col,

@@ -266,7 +266,7 @@ pivot_ui <- fluidRow(
 # ============================================================
 
 cancer_tab <- tabPanel(
-  title = "Cancer Statistics",
+  title = "Cancer Statistics (1999-2022)",
   
   fluidPage(
     useShinyjs(),

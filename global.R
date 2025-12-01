@@ -234,6 +234,7 @@ generate_widget_filters <- function(data) {
 
 # Initial filters
 cancer_base_filters <- generate_widget_filters(cancer_dat)
+heatwave_base_filters <- generate_widget_filters(heatwave_dat)
 # No initial rules
 rules_widgets <- NULL
 

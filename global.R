@@ -26,11 +26,11 @@ library(openxlsx)
 
 
 #### HEATWAVE 1981–2010 DATA ####
-heatwave_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/cdc_heatwave.db")
-
-heatwave_dat <- dbGetQuery(heatwave_con, "SELECT DISTINCT * FROM heatwave_d104")
-
-dbDisconnect(heatwave_con)  # ✅ safely disconnect when done
+# heatwave_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/cdc_heatwave.db")
+# 
+# heatwave_dat <- dbGetQuery(heatwave_con, "SELECT DISTINCT * FROM heatwave_d104")
+# 
+# dbDisconnect(heatwave_con)  # ✅ safely disconnect when done
 
 
 #### CANCER STATISTICS 1999–2022 ####

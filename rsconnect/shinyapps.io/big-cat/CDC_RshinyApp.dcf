@@ -1,0 +1,13 @@
+name: CDC_RshinyApp
+title: CDC_RshinyApp
+username: big-cat
+account: big-cat
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16210039
+bundleId: 11259257
+url: https://big-cat.shinyapps.io/CDC_RshinyApp/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: cdc_data_dictionary.md|Data_Extraction/cancer_statistics_1999_2022_extraction.py|Data_Extraction/heatwave_data_extraction.py|pivot_table_app.R|Project_Directory_Map.txt|README.md|Rshiny_Data_Bases/.gitattributes|poc_apps

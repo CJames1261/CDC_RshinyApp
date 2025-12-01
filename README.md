@@ -1,75 +1,131 @@
 # 📊 CDC Data Extraction & Public Health Visualization Project
 
+# 💻 Running the App Locally (Important)
+
+This R Shiny application is **large and resource-intensive**, and it loads multiple CDC datasets directly into memory. Because of this, it **cannot be hosted for free** on services like shinyapps.io, which have strict CPU and RAM limits.
+
+If you would like to explore the full application, you will need to run it **locally** on your own machine.
+
+### ▶️ Requirements
+
+**Software**
+
+* **R (≥ 4.1)**
+* **RStudio** (recommended for proper working directory handling)
+
+
+### ▶️ How to Run the App
+
+1. Open the project folder in **RStudio**
+2. Open the global.R file and click “Install Packages” when prompted
+RStudio automatically detects missing libraries.
+When you open global.R, RStudio will highlight any packages not yet installed and offer to install them for you.
+3. Open **ui.R**, **server.R**, or **global.R**
+4. Click **Run App** (top-right button in RStudio)
+
+RStudio automatically loads all modular files inside:
+
+```
+Tabs/
+  ├── Cancer_Statistics_Tab/
+  ├── Heatwave_Tab/
+  └── Overview_Tab/
+```
+
+The full Shiny application will open in your browser.
+
+---
+
+# 🔍 Project Motivation
+
 This project began as an effort to deploy an R Shiny app capable of visualizing public health data from the CDC. While exploring the CDC website to understand what datasets were publicly available, I quickly realized that accessing and working with the data is far more complicated than it should be. The CDC’s interface can be confusing, the data formats are inconsistent, and the exported tables are not intuitive for the average user—especially those without a data science background.
 
 Public health data may be publicly available, but it is not always transparent or accessible.
 
-## 🔍 Project Motivation
+## 🔍 Why This Project Exists
 
-After navigating the CDC’s data tools and discovering how challenging they can be for everyday users, I decided to build a set of Python-based extraction methods that:
+After navigating the CDC’s data tools, I decided to build a set of Python-based extraction methods that:
 
-* Follow the official CDC WONDER API/form submission guidelines
+* Follow CDC WONDER API/form submission rules
 * Automate retrieval of public datasets
-* Clean and restructure the data into analysis-ready tables
-* Standardize naming, data types, and schema formats
-* Make the data usable for both analysts and non-technical users
+* Clean and restructure them into analysis-ready tables
+* Standardize naming, typing, and schema
+* Make the data easier for both analysts and non-technical users
 
-My goal is to lower the barrier of entry for exploring public health data. Even though the data is public, it should be far easier to access, understand, and visualize.
+My goal is to make public health data easier to access, understand, and visualize.
 
-## 🚀 Current Progress
+---
 
-I’ve completed my first full extraction pipeline for the dataset:
+🚀 Current Progress
 
-**“Number of Heat Wave Days in May–September (1981–2010)”**
+I’ve completed full extraction pipelines for the following CDC datasets:
+
+1️⃣ Number of Heat Wave Days in May–September (1981–2010)
 
 This pipeline automatically:
 
-* Sends CDC-compliant API/form requests
-* Parses XML responses
-* Cleans the raw data
-* Extracts counties, state abbreviations, and full state names
-* Fixes data types
-* Stores the results in PostgreSQL and SQLite for querying
-* Prepares the dataset for downstream visualization tools like R Shiny
+Sends proper API/form requests
 
-## 🎯 Next Steps
+Parses XML responses
 
-The next phase of the project is to:
+Cleans raw values
 
-### ✔ Extract **all publicly available CDC datasets**
+Extracts county/state information
 
-I plan to automate retrieval for every available CDC WONDER dataset, each of which comes with its own schema, structure, and quirks.
+Fixes data types
 
-### ✔ Standardize all datasets under a unified schema
+Stores results in PostgreSQL and SQLite
 
-This includes:
+Prepares the dataset for visualization in R Shiny
 
-* Normalized naming conventions
-* Consistent data types
-* Standardized geographic columns (County, FIPS, State, etc.)
-* Cleaned numerical fields
-* Consolidated formats for time, demographics, measures, and metadata
+2️⃣ Cancer Statistics (1999–2022)
 
-### ✔ Integrate all standardized datasets into an R Shiny application
+This dataset includes counts, populations, crude rates, cancer sites, demographics, and state-level metrics.
+The pipeline:
 
-The vision for the application is to allow any end user to:
+Standardizes naming and data types
 
-* Select the CDC dataset they are interested in
-* Explore the data interactively
-* View charts, maps, and statistical summaries
-* Slice and filter by state, county, time, or demographic fields
-* Access meaningful public health insights without needing technical expertise
+Cleans numeric fields and resolves formatting issues
 
-This will transform complex CDC data tables into a simple, user-friendly interface that anyone can explore.
+Aligns demographic categories
 
-## 📈 Long-Term Vision
+Outputs analysis-ready tables for visualization
 
-Ultimately, this project aims to provide:
+Loads efficiently into the R Shiny app with full filtering, pivoting, and charting support
+---
+
+# 🎯 Next Steps
+
+### ✔ Extract all publicly available CDC WONDER datasets
+
+Each dataset has unique schemas and quirks.
+
+### ✔ Standardize all datasets into one unified schema
+
+Including geography, demographics, numeric fields, and metadata.
+
+### ✔ Integrate everything into a single R Shiny application
+
+Users will be able to:
+
+* Select any dataset
+* Explore interactively
+* View charts, tables, heatmaps, and pivots
+* Filter by geography, time, and demographic fields
+
+This will turn complex, inconsistent CDC tables into a user-friendly interface.
+
+---
+
+# 📈 Long-Term Vision
+
+The long-term goal is to provide:
 
 * A unified API layer for CDC public datasets
-* Clean, analysis-ready public health tables
-* Accessible visualizations for communities, researchers, and citizens
-* A more transparent way to interact with the data that affects public health decisions
+* Clean, analysis-ready tables
+* Accessible visualizations for researchers and the public
+* A more transparent way to interact with data that impacts public health
 
 Public health data belongs to everyone—and accessing it shouldn’t require specialized expertise.
+
 

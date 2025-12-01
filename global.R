@@ -42,7 +42,7 @@ cancer_dat <- dbGetQuery(cancer_con, "SELECT DISTINCT * FROM cancer_statistics_1
 
 dbDisconnect(cancer_con)  # ✅ safely disconnect here too
 
-  
+
 #### Global Plotly graph functions ####
 # This code creates a full screen button and a download csv button in the poltly/ggplotly plot menu
 # SVG icons

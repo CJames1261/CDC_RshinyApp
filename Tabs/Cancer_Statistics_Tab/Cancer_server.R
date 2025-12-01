@@ -89,14 +89,14 @@ render_cancer_tab <- function(input, output, session) {
     )
   })
   
-
+  
   
   
   
   # ---- UPDATED PIVOT TABLE (FELIX VERSION) ----
   output$pivot_table_widget <- renderRpivotTable({
     req(rv$filtered_data)
-
+    
     rpivotTable(
       data = rv$filtered_data,
       rows = "State",
@@ -104,7 +104,7 @@ render_cancer_tab <- function(input, output, session) {
       vals = "Count",
       aggregatorName = "Sum",
       rendererName = "Heatmap",
-
+      
       # Full Felix renderer list
       renderers = list(
         "Table"          = htmlwidgets::JS('$.pivotUtilities.renderers["Table"]'),
@@ -115,7 +115,7 @@ render_cancer_tab <- function(input, output, session) {
         "Stacked Bar Chart" = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Stacked Bar Chart"]'),
         "Area Chart"        = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Area Chart"]')
       ),
-
+      
       onRefresh = htmlwidgets::JS("
         function() {
           var htmltable = document.getElementsByClassName('pvtRendererArea')[0].innerHTML;
@@ -124,24 +124,24 @@ render_cancer_tab <- function(input, output, session) {
       ")
     )
   })
-
+  
   # ---- PARSE PIVOT HTML → DF ----
   df_for_download <- eventReactive(input$pivot_table_html, {
     req(input$pivot_table_html)
-
+    
     html <- read_html(input$pivot_table_html)
     html_table_element <- html_element(html, "table")
     if (is.na(html_table_element)) return(NULL)
-
+    
     df <- html_table(html_table_element)
     df <- as.data.frame(df)
-
+    
     df <- df[!grepl("Total", df[[1]], ignore.case = TRUE), ]
     df <- df[, !grepl("Total", names(df), ignore.case = TRUE)]
-
+    
     df
   })
-
+  
   # ---- DOWNLOAD PIVOT TABLE ----
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -157,7 +157,7 @@ render_cancer_tab <- function(input, output, session) {
         showNotification("No pivot data available.", type = "error")
         return()
       }
-
+      
       if (input$format == "csv") {
         readr::write_excel_csv(dataframe, file)
       } else {

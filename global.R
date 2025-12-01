@@ -19,26 +19,29 @@ library(htmlwidgets)
 library(rvest)
 library(writexl)
 library(readr)
+library(openxlsx)
 
 
 
 
- 
-#### read in data bases ###
-  
-#### HEATWAVE 1981-2010 DATA #### 
+
+#### HEATWAVE 1981–2010 DATA ####
 heatwave_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/cdc_heatwave.db")
-#print(dbListTables(heatwave_con))
-  
-# Replace "your_table_name" with the actual name of the table you want to query
-heatwave_dat <- dbGetQuery(heatwave_con, "SELECT distinct * FROM heatwave_d104")
-  
+
+heatwave_dat <- dbGetQuery(heatwave_con, "SELECT DISTINCT * FROM heatwave_d104")
+
+dbDisconnect(heatwave_con)  # ✅ safely disconnect when done
+
+
+#### CANCER STATISTICS 1999–2022 ####
 cancer_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/cancer_statistics_1999_2022.db")
+
 print(dbListTables(cancer_con))
-  
-# Replace "your_table_name" with the actual name of the table you want to query
+
 cancer_dat <- dbGetQuery(cancer_con, "SELECT DISTINCT * FROM cancer_statistics_1999_2022")
-  
+
+dbDisconnect(cancer_con)  # ✅ safely disconnect here too
+
   
 #### Global Plotly graph functions ####
 # This code creates a full screen button and a download csv button in the poltly/ggplotly plot menu

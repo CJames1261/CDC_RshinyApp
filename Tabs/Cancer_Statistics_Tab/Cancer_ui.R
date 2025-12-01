@@ -1,4 +1,3 @@
-
 # Tabs/Cancer_Statistics_Tab/Cancer_ui.R
 
 css_body <- tags$head(
@@ -62,6 +61,7 @@ css_body <- tags$head(
     .selectize-input input[type='text'] {
       width: 300px !important;
     }
+
     .rule-value-container {
       border-left: 1px solid #ddd;
       padding-left: 5px;
@@ -76,6 +76,11 @@ css_body <- tags$head(
       color: #ffffff;
       background-color: #000000;
       bottom: 15px;
+    }
+
+    /* Hide the Shiny download button that DT triggers */
+    #download_cancer_data {
+      display: none !important;
     }
   ")
   ))
@@ -112,9 +117,20 @@ jss_body <- tags$head(
 cancer_tab <- tabPanel(
   title = "Cancer Statistics",
   fluidPage(
-    shinyjs::useShinyjs(),
+    useShinyjs(),
     useQueryBuilder(bs_version = "5"),
-    css_body, jss_body,
+    css_body,
+    jss_body,
+    
+    tags$style(HTML("
+  #download1 {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: transparent !important;
+  }
+")),
     
     fluidRow(
       column(6,
@@ -131,7 +147,7 @@ cancer_tab <- tabPanel(
       ),
       column(6,
              h4("Filtered Data"),
-             DTOutput("filtered_table")
+             withSpinner(DTOutput("filtered_table"), type = 1, color = "#0dc5c1")
       )
     ),
     
@@ -140,20 +156,24 @@ cancer_tab <- tabPanel(
     fluidRow(
       column(1,
              h4("Pivot Table Download Options"),
-             radioButtons(inputId = "format",
-                          choices = c("excel", "csv"),
-                          label = NULL,
-                          inline = TRUE,
-                          selected = "excel"),
+             radioButtons(
+               inputId = "format",
+               choices = c("excel", "csv"),
+               label = NULL,
+               inline = TRUE,
+               selected = "excel"
+             ),
              downloadButton(
-               outputId = "downloadData", 
+               outputId = "downloadData",
                class = "btn-primary",
-               label = "Download Pivot Table")
+               label = "Download Pivot Table"
+             )
       ),
+      
       column(11,
              h4("Pivot Table"),
-             rpivotTableOutput("pivot_table_widget")
-      )
+             withSpinner(rpivotTableOutput("pivot_table_widget"), type = 1, color = "#0dc5c1")
+      ),downloadButton("download1", label = "")
     )
   )
 )

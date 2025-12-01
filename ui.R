@@ -1,3 +1,5 @@
+
+
 css_navbar <- tags$style(HTML(
   '
   /* Navbar background color */

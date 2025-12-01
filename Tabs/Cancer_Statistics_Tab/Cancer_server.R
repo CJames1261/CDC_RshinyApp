@@ -1,41 +1,49 @@
-
-# Tabs/Cancer_Statistics_Tab/Cancer_server.R
-
 render_cancer_tab <- function(input, output, session) {
-
-  # Reactive filtered dataset
+  
+  # ---- REACTIVE VALUES ----
   rv <- reactiveValues(filtered_data = cancer_dat)
   
+  # ---- DT DOWNLOAD CALLBACK ----
+  
+  callback <- JS(
+    
+    "var a = document.createElement('a');",
+    "$(a).attr('id', 'dt_download');",
+    "$(a).addClass('btn btn-default shiny-download-link dt-button');",
+    "$(a).html('<i class=\"fa fa-download\"></i> Download Full Data');",
+    
+    
+    "a.href = document.getElementById('download1').href;",
+    "$(a).attr('download', '');",
+    
+    
+    "$('div.dwnld').append(a);",
+    
+    
+    "$('#download1').hide();"
+  )
+  
+  # ---- FILTER HANDLING ----
   observe({
     qb <- input$widget_filter
     if (is.null(qb)) return()
     
     rules <- qb$r_rules
-    print("Rules changed:")
-    print(rules)
     
     # Apply filtering logic
     df_filtered <- if (is.null(rules)) {
       cancer_dat
     } else {
       df <- filter_table(cancer_dat, rules)
-      
-      # Ensure 'Year' stays numeric so sliders work
       if ("Year" %in% names(df)) {
         df$Year <- suppressWarnings(as.numeric(df$Year))
       }
-      
       df
     }
     
-    # Update reactive value
     rv$filtered_data <- df_filtered
     
-    # Print column types for debugging
-    print("Column classes after filtering:")
-    print(sapply(rv$filtered_data, class))
-    
-    # Regenerate filters
+    # Auto-regenerate filters
     new_filters <- generate_widget_filters(rv$filtered_data)
     
     updateQueryBuilder(
@@ -45,13 +53,43 @@ render_cancer_tab <- function(input, output, session) {
     )
   })
   
-  # Render filtered data table
+  
+  # ---- FILTERED DATA TABLE ----
   output$filtered_table <- renderDT({
     req(rv$filtered_data)
-    DT::datatable(rv$filtered_data)
+    
+    datatable(
+      rv$filtered_data,
+      rownames = FALSE,
+      extensions = "Buttons",
+      callback = callback,
+      options = list(
+        dom = 'B<"dwnld">frtip',
+        buttons = list("copy")  # optional
+      )
+    )
   })
   
-  # Reset filters
+  
+  # ---- DOWNLOAD HANDLER FOR FILTERED DATA ----
+  output$download1 <- downloadHandler(
+    filename = function() {
+      paste0("Cancer_Statistics_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      data <- rv$filtered_data
+      
+      if (is.null(data)) {
+        showNotification("No data available to download.", type = "error")
+        return()
+      }
+      
+      write.csv(data, file, row.names = FALSE)
+    }
+  )
+  
+  
+  # ---- RESET FILTERS ----
   observeEvent(input$reset, {
     rv$filtered_data <- cancer_dat
     
@@ -63,7 +101,8 @@ render_cancer_tab <- function(input, output, session) {
     )
   })
   
-  # Render rpivotTable widget
+  
+  # ---- PIVOT TABLE ----
   output$pivot_table_widget <- renderRpivotTable({
     req(rv$filtered_data)
     
@@ -83,7 +122,8 @@ render_cancer_tab <- function(input, output, session) {
     )
   })
   
-  # Extract pivot table HTML and convert to dataframe
+  
+  # ---- PARSE PIVOT TABLE HTML → DATAFRAME ----
   df_for_download <- eventReactive(input$pivot_table_html, {
     html <- read_html(input$pivot_table_html)
     html_table_element <- html_element(html, "table")
@@ -93,34 +133,9 @@ render_cancer_tab <- function(input, output, session) {
     df <- html_table(html_table_element)
     df <- as.data.frame(df)
     
-    # Remove 'Total' rows/columns if present
+    # Remove Totals
     df <- df[!grepl("Total", df[[1]], ignore.case = TRUE), ]
     
     df
   })
-  
-  # Download handler
-  output$downloadData <- downloadHandler(
-    filename = function() {
-      suffix <- format(Sys.Date(), "%Y%m%d")
-      if (input$format == "csv") {
-        paste0("pivot_table_", suffix, ".csv")
-      } else {
-        paste0("pivot_table_", suffix, ".xlsx")
-      }
-    },
-    content = function(file) {
-      data <- df_for_download()
-      if (is.null(data)) {
-        showNotification("No data to download.", type = "error")
-        return(NULL)
-      }
-      
-      if (input$format == "csv") {
-        readr::write_excel_csv(data, file = file)
-      } else {
-        writexl::write_xlsx(data, path = file)
-      }
-    }
-  )
 }

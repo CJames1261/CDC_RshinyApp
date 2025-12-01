@@ -1,5 +1,8 @@
-# Tabs/Cancer_Statistics_Tab/Cancer_ui.R
+# ============================================================
+#  CANCER UI — Fully Integrated (BS3 QueryBuilder + BS5 Felix Pivot)
+# ============================================================
 
+# ---------------- CSS (same as your original) ----------------
 css_body <- tags$head(
   tags$style(
     HTML(" 
@@ -78,13 +81,14 @@ css_body <- tags$head(
       bottom: 15px;
     }
 
-    /* Hide the Shiny download button that DT triggers */
     #download_cancer_data {
       display: none !important;
     }
   ")
-  ))
+  )
+)
 
+# ---------------- JavaScript (same as your original) ----------------
 jss_body <- tags$head(
   tags$script(HTML("
     $(document).on('click', '.box-header .fa-minus', function() {
@@ -114,66 +118,171 @@ jss_body <- tags$head(
   "))
 )
 
+# ============================================================
+#  QUERY BUILDER UI BLOCK (Bootstrap 3)
+# ============================================================
+
+queryBuilder_ui <- tagList(
+  fluidRow(
+    column(6,
+           h4("Query Builder"),
+           queryBuilderInput(
+             inputId = "widget_filter",
+             filters = cancer_base_filters,
+             rules = rules_widgets,
+             display_errors = TRUE,
+             return_value = "all"
+           ),
+           br(),
+           actionButton("reset", "Reset Filters", class = "btn-danger")
+    ),
+    column(6,
+           h4("Filtered Data"),
+           withSpinner(DTOutput("filtered_table"), type = 1, color = "#0dc5c1")
+    )
+  ),
+  hr()
+)
+
+# ============================================================
+#  FELIX PIVOT TABLE UI BLOCK (Bootstrap 5 — isolated)
+# ============================================================
+
+# pivot_ui <- div(
+#   
+#   # Force Bootstrap 3 only (no BS5 conflicts)
+#   bs_theme_dependencies(
+#     bs_theme(version = 3)
+#   ),
+#   
+#   fluidRow(
+#     # ----- Sidebar (left) -----
+#     column(
+#       width = 3,
+#       div(
+#         style = "
+#           background:#f8f9fa;
+#           padding:15px;
+#           border:1px solid #ddd;
+#           border-radius:4px;
+#           height:100%;
+#         ",
+#         
+#         h4("Pivot Table Options"),
+#         
+#         radioButtons(
+#           inputId = "format",
+#           label = "Download Format",
+#           choices = c("excel", "csv"),
+#           inline = FALSE,
+#           selected = "excel"
+#         ),
+#         
+#         downloadButton(
+#           outputId = "downloadData",
+#           class = "btn-primary",
+#           label = "Download Pivot Table"
+#         )
+#       )
+#     ),
+#     
+#     # ----- Pivot Table Card (right) -----
+#     column(
+#       width = 9,
+#       div(
+#         class = "panel panel-default",
+#         
+#         div(
+#           class = "panel-heading",
+#           style = "background:#222; color:white; font-weight:bold;",
+#           "Pivot Table"
+#         ),
+#         
+#         div(
+#           class = "panel-body",
+#           div(
+#             style = "overflow-x:auto;",
+#             rpivotTableOutput("pivot_table_widget", height = "100%")
+#           )
+#         ),
+#         
+#         div(
+#           class = "panel-footer",
+#           style = "text-align:right;",
+#           HTML('More R templates: 
+#                <a href="https://felixanalytix.com/templates" target="_blank">
+#                   felixanalytix.com/templates
+#                </a>')
+#         )
+#       )
+#     )
+#   )
+# )
+
+pivot_ui <- fluidRow(
+  column(1,
+         h4("Pivot Table Download Options"),
+         radioButtons(
+           inputId = "format",
+           choices = c("excel", "csv"),
+           label = NULL,
+           inline = TRUE,
+           selected = "excel"
+         ),
+         downloadButton(
+           outputId = "downloadData",
+           class = "btn-primary",
+           label = "Download Pivot Table"
+         )
+  ),
+  
+  column(11,
+         div(class = "panel panel-default",
+             
+             # ---- BLACK HEADING ----
+             div(
+               class = "panel-heading",
+               style = "background:#000000; color:white; font-weight:bold;",
+               "Pivot Table"
+             ),
+             
+             div(class = "panel-body",
+                 withSpinner(
+                   rpivotTableOutput("pivot_table_widget", height = "100%"),
+                   type = 1, color = "#0dc5c1"
+                 )
+             )
+         )
+  )
+)
+
+
+
+      
+
+
+# ============================================================
+#  MAIN TAB UI (Final combined layout)
+# ============================================================
+
 cancer_tab <- tabPanel(
   title = "Cancer Statistics",
+  
   fluidPage(
     useShinyjs(),
-    useQueryBuilder(bs_version = "5"),
+    useQueryBuilder(bs_version = "5"),  # ← ensures QueryBuilder stays BS3
+    
     css_body,
     jss_body,
     
-    tags$style(HTML("
-  #download1 {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    color: transparent !important;
-  }
-")),
-    
-    fluidRow(
-      column(6,
-             h4("Query Builder"),
-             queryBuilderInput(
-               inputId = "widget_filter",
-               filters = cancer_base_filters,
-               rules = rules_widgets,
-               display_errors = TRUE,
-               return_value = "all"
-             ),
-             br(),
-             actionButton("reset", "Reset Filters", class = "btn-danger")
-      ),
-      column(6,
-             h4("Filtered Data"),
-             withSpinner(DTOutput("filtered_table"), type = 1, color = "#0dc5c1")
-      )
-    ),
+    # ---- Query Builder UI (Bootstrap 3) ----
+    queryBuilder_ui,
     
     hr(),
     
-    fluidRow(
-      column(1,
-             h4("Pivot Table Download Options"),
-             radioButtons(
-               inputId = "format",
-               choices = c("excel", "csv"),
-               label = NULL,
-               inline = TRUE,
-               selected = "excel"
-             ),
-             downloadButton(
-               outputId = "downloadData",
-               class = "btn-primary",
-               label = "Download Pivot Table"
-             )
-      ),
-      
-      column(11,
-             h4("Pivot Table"),
-             withSpinner(rpivotTableOutput("pivot_table_widget"), type = 1, color = "#0dc5c1")
-      ),downloadButton("download1", label = "")
-    )
+    # ---- Felix Pivot UI (Bootstrap 5 isolated) ----
+    pivot_ui,
+    
+    downloadButton("download1", label = "")
   )
 )

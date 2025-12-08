@@ -122,7 +122,9 @@ server <- function(input, output){
         "Line Chart"        = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Line Chart"]'),
         "Bar Chart"         = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Bar Chart"]'),
         "Stacked Bar Chart" = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Stacked Bar Chart"]'),
-        "Area Chart"        = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Area Chart"]')
+        "Area Chart"        = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Area Chart"]'),
+        "Pie Chart"          = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Pie Chart"]'),
+        "Donut Chart"        = htmlwidgets::JS('$.pivotUtilities.c3_renderers["Donut Chart"]')
       ),
       onRefresh = htmlwidgets::JS("function() {
             var htmltable=document.getElementsByClassName('pvtRendererArea')[0].innerHTML;

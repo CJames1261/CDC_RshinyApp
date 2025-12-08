@@ -26,11 +26,10 @@ library(openxlsx)
 
 
 #### HEATWAVE 1981–2010 DATA ####
-# heatwave_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/cdc_heatwave.db")
-# 
-# heatwave_dat <- dbGetQuery(heatwave_con, "SELECT DISTINCT * FROM heatwave_d104")
-# 
-# dbDisconnect(heatwave_con)  # ✅ safely disconnect when done
+heatwave_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/cdc_heatwave.db")
+ 
+heatwave_dat <- dbGetQuery(heatwave_con, "SELECT DISTINCT * FROM heatwave_d104")
+dbDisconnect(heatwave_con)  # ✅ safely disconnect when done
 
 
 #### CANCER STATISTICS 1999–2022 ####
@@ -41,6 +40,15 @@ print(dbListTables(cancer_con))
 cancer_dat <- dbGetQuery(cancer_con, "SELECT DISTINCT * FROM cancer_statistics_1999_2022")
 
 dbDisconnect(cancer_con)  # ✅ safely disconnect here too
+
+#### CANCER STATISTICS 1999–2022 ####
+std_con <- dbConnect(SQLite(), dbname = "./Rshiny_Data_Bases/std_1996_2014.db")
+
+
+std_dat <- dbGetQuery(std_con, "SELECT DISTINCT * FROM std_1996_2014")
+
+dbDisconnect(std_con)  # ✅ safely disconnect here too
+
 
 
 #### Global Plotly graph functions ####
@@ -235,6 +243,7 @@ generate_widget_filters <- function(data) {
 # Initial filters
 cancer_base_filters <- generate_widget_filters(cancer_dat)
 heatwave_base_filters <- generate_widget_filters(heatwave_dat)
+std_base_filters <- generate_widget_filters(std_dat)
 # No initial rules
 rules_widgets <- NULL
 
@@ -247,3 +256,6 @@ source("Tabs/Cancer_Statistics_Tab/Cancer_server.R")
 
 source("Tabs/Heatwave_Tab/Heatwave_ui.R")
 source("Tabs/Heatwave_Tab/Heatwave_server.R")
+
+source("Tabs/STD_Statistics_Tab/std_ui.R")
+source("Tabs/STD_Statistics_Tab/std_server.R")

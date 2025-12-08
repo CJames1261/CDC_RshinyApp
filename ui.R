@@ -106,6 +106,7 @@ navbarPage(
   Overview_tab,
   cancer_tab,
   heatwave_tab,
+  std_tab,
   JS_navbar,
   css_navbar
 )

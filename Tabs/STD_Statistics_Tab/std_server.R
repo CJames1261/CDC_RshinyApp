@@ -114,9 +114,9 @@ render_std_tab <- function(input, output, session) {
     
     rpivotTable(
       data = rv$filtered_data,
-      rows = names(rv$filtered_data)[1],
-      cols = names(rv$filtered_data)[2],
-      vals = names(rv$filtered_data)[3],
+      rows = names(rv$filtered_data)[2],
+      cols = names(rv$filtered_data)[1],
+      vals = names(rv$filtered_data)[6],
       aggregatorName = "Sum",
       rendererName = "Heatmap",
       
